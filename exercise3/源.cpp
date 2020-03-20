@@ -13,10 +13,19 @@ int main()
 	cv::Mat resultMat;
 	cv::Mat	M1;
 	cv::Mat srcMat = imread("D:\\5.jpg", 0);
-	Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+	int height = srcMat.rows;
+	int width = srcMat.cols;
+	for (int j = 0; j < height; j++) {
+		uchar*data = srcMat.ptr<uchar>(j);
+		for (int i = 0; i < width; i++) {
+			
+			data[i] = 255 - data[i];
+		}
+	}
+	imshow("srcMat", srcMat);
+	Mat kernel = getStructuringElement(MORPH_RECT, Size(9, 9));
 	morphologyEx(srcMat, M1, MORPH_OPEN, kernel);
-	imshow("M1", M1);
-	cv::threshold(M1, binaryMat, 0, 255, THRESH_OTSU);
+	cv::threshold(M1, binaryMat, 0,255, THRESH_OTSU);
 	int nComp = cv::connectedComponentsWithStats(binaryMat,
 		labelMat,
 		statsMat,
@@ -27,9 +36,6 @@ int main()
 	resultMat = cv::Mat::zeros(srcMat.size(), CV_8UC3);
 	for (int i = 1; i < nComp; i++)
 	{
-		char num[10];
-		sprintf_s(num, "%d", i);
-
 		Rect bndbox;
 		bndbox.x = statsMat.at<int>(i, 0);
 		bndbox.y = statsMat.at<int>(i, 1);
