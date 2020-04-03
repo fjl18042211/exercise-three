@@ -5,34 +5,22 @@ using namespace cv;
 using namespace std;
 int main()
 {
-	VideoCapture cap;
-	cap.open(0);
-	if (!cap.isOpened())
-	{
-		std::cout << "不能打开视频文件" << std::endl;
-		return -1;
-	}
-	double fps = cap.get(CAP_PROP_FPS);
-	std::cout << "fps" << fps << std::endl;
-	while (1)
-	{
-		cv::Mat frame;
-		cv::Mat dst;
-		bool rSucess = cap.read(frame);
-		if (!rSucess)
-		{
-			std::cout << "不能从视频文件中读取帧" << std::endl;
-			break;
-		}
-		else
-		{
-			cv::GaussianBlur(frame, dst, Size(5, 5),3,3);
-			cv::imshow("dst", dst);
-
-		}
-		waitKey(30);
-	}
-	
+	cv::Mat dstMat;
+	cv::Mat srcMat = cv::imread("D:\\lena.jpg", 1);
+	if (srcMat.empty()) return-1;
+	const cv::Point2f src_pt[] = {
+									cv::Point2f(200,200),
+									cv::Point2f(250,200),
+									cv::Point2f(200,100) };
+	const cv::Point2f dst_pt[] = {
+									cv::Point2f(300,100),
+									cv::Point2f(300,50),
+									cv::Point2f(200,100) };
+	const cv::Mat affine_matrix = cv::getAffineTransform(src_pt, dst_pt);
+	cv::warpAffine(srcMat, dstMat, affine_matrix, srcMat.size());
+	cv::imshow("src", srcMat);
+	cv::imshow("dst", dstMat);
+	cv::waitKey(0);
 	return 0;
 
 }
